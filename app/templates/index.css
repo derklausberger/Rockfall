@@ -1,0 +1,67 @@
+body {
+    background-color: rgb(153, 204, 255);
+    /*background-image: linear-gradient(#d75764, #8fc9e7, #ffffff);*/
+    font-family: "Bebas Neue";
+}
+.navbar-light bg-info navbar navbar-expand-sm {
+    background-color: #3898EC;
+}
+
+.nav {
+    background-color: #ffffff;
+}
+/*.navbar img {
+    width: auto;
+    height: 5em;
+    alignment: center;
+    padding: 1em;
+}*/
+
+.wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  font-weight: bold;
+  text-align: center;
+}
+
+.wrapper > * {
+  padding: 10px;
+  flex: 1 100%;
+}
+
+.header {
+  background: tomato;
+}
+
+.footer {
+  background: lightgreen;
+}
+
+.main {
+  text-align: left;
+  background: deepskyblue;
+}
+
+.aside-1 {
+  background: gold;
+}
+
+.aside-2 {
+  background: hotpink;
+}
+
+@media all and (min-width: 600px) {
+  .aside { flex: 1 0 0; }
+}
+
+@media all and (min-width: 800px) {
+  .main    { flex: 3 0px; }
+  .aside-1 { order: 1; }
+  .main    { order: 2; }
+  .aside-2 { order: 3; }
+  .footer  { order: 4; }
+}
+
+body {
+  padding: 2em;
+}
