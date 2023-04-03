@@ -14,31 +14,39 @@
     <title>Index</title>
 </head>
 <body>
-<div>
-<img src="/app/static/Logo_FH.png" height="50" alt="">
-    <img src="/app/static/Logo_GeoZS.png" height="50">
+<div class="grid-container">
 
-<!-- Beginn of navbar -->
-<nav class="nav flex-column navbar navbar-dark bg-dark">
-    <a class="btn btn-secondary" href="upload.html" role="button">Upload</button>
-        <a class="nav-link active" href="upload.html">Upload</a>
-    <a class="nav-link active" href="#">Bla</a>
-    <a class="nav-link active" href="#">bla</a>
-    <a class="nav-link active" href="#">bla</a>
-</nav>
+<header class="header">
+<img src="/app/static/Logo.png">
+</header>
 
-    <!-- Row at bottom with nav component -->
-    <div class="row">
-        <div class="col">
-            <nav class="nav fixed-bottom justify-content-center navbar-expand-sm ">
-                <a class="nav-link" href="#">About us</a>
-                <a class="nav-link" href="#">Contact Us</a>
-                <a class="nav-link" href="#">Register/login</a>
-            </nav>
-        </div>
+<!-- Beginn of side navbar -->
+<aside class="sidenav">
+    <div class="col-3">
+         <a class="btn btn-secondary" href="upload.html" role="button">Upload</button></a>
+         <a class="nav-link active" href="upload.html">Upload</a>
+         <a class="nav-link active" href="#">Bla</a>
+         <a class="nav-link active" href="#">bla</a>
+         <a class="nav-link active" href="#">bla</a>
     </div>
-    <!-- End of row with nav component -->
-</div>
+</aside>
+
+<main class="main" bg-secondary>
+    <p>sdfsdfs</p>
+</main>
+
+<!-- Row at bottom with nav component -->
+<footer id="footer" class="row">
+    <div class="col">
+        <img src="/app/static/Logo.png">
+        <nav class="nav fixed-bottom justify-content-center navbar-expand-sm ">
+            <a class="nav-link" href="#">About us</a>
+            <a class="nav-link" href="#">Contact Us</a>
+            <a class="nav-link" href="#">Register/login</a>
+        </nav>
+    </div>
+</footer>
+<!-- End of row with nav component -->
 
 <!--
      Bootstrap JavaScript Libraries
@@ -49,5 +57,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
             crossorigin="anonymous"></script>
 -->
+</div>
 </body>
 </html>

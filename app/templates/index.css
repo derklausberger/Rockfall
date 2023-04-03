@@ -3,12 +3,18 @@ body {
     /*background-image: linear-gradient(#d75764, #8fc9e7, #ffffff);*/
     font-family: "Bebas Neue";
 }
-.navbar-light bg-info navbar navbar-expand-sm {
-    background-color: #3898EC;
-}
 
 .nav {
-    background-color: #ffffff;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
 }
 /*.navbar img {
     width: auto;
@@ -17,51 +23,106 @@ body {
     padding: 1em;
 }*/
 
-.wrapper {
-  display: flex;
-  flex-flow: row wrap;
-  font-weight: bold;
-  text-align: center;
+.grid-container {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-template-rows: 50px 1fr 50px;
+  grid-template-areas:
+    "header header"
+    "sidenav main"
+    "footer footer";
+  height: 100vh;
 }
 
-.wrapper > * {
-  padding: 10px;
-  flex: 1 100%;
-}
-
+/* Give every child element its grid name */
 .header {
-  background: tomato;
+  grid-area: header;
+  background-color: rgb(153, 204, 255);
 }
 
-.footer {
-  background: lightgreen;
+.sidenav {
+  align-content: center;
+  width: 200px;
+  border-color: red;
+  padding-top: 15px;
+  grid-area: sidenav;
+  background-color: #4b5059;
 }
 
 .main {
-  text-align: left;
-  background: deepskyblue;
+  grid-area: main;
+  background-color: #4b5059;
+  padding: 15px;
 }
 
-.aside-1 {
-  background: gold;
+.footer {
+  grid-area: footer;
+  background-color: #648ca6;
+  padding: 5px;
 }
 
-.aside-2 {
-  background: hotpink;
+.col-auto {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
 }
 
-@media all and (min-width: 600px) {
-  .aside { flex: 1 0 0; }
+.col-1 {
+  flex: 0 0 8.33333%;
+  max-width: 8.33333%;
 }
 
-@media all and (min-width: 800px) {
-  .main    { flex: 3 0px; }
-  .aside-1 { order: 1; }
-  .main    { order: 2; }
-  .aside-2 { order: 3; }
-  .footer  { order: 4; }
+.col-2 {
+  flex: 0 0 16.66667%;
+  max-width: 16.66667%;
 }
 
-body {
-  padding: 2em;
+.col-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+.col-4 {
+  flex: 0 0 33.33333%;
+  max-width: 33.33333%;
+}
+
+.col-5 {
+  flex: 0 0 41.66667%;
+  max-width: 41.66667%;
+}
+
+.col-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.col-7 {
+  flex: 0 0 58.33333%;
+  max-width: 58.33333%;
+}
+
+.col-8 {
+  flex: 0 0 66.66667%;
+  max-width: 66.66667%;
+}
+
+.col-9 {
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+
+.col-10 {
+  flex: 0 0 83.33333%;
+  max-width: 83.33333%;
+}
+
+.col-11 {
+  flex: 0 0 91.66667%;
+  max-width: 91.66667%;
+}
+
+.col-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
 }
