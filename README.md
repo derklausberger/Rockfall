@@ -4,5 +4,5 @@ Install flask:
 
 $ pip install flask
 
-$ pip install Flask-Navigation
+$ pip install -U Jinja2
 
