@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Rockfall</title>
-</head>
-<body>
-{% for row in data %}
-    <div>
-        {{ row['date'] }}
-        <span>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>-
-        {{ row['distance'] }}
-    </div>
-{% endfor %}
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block app_context %}
+    <p>lol</p>
+    {% for row in data %}
+        <div>
+            {{ row['dateTime'] }}
+            <span>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>-
+            {{ row['distance'] }}
+            <span>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>-
+            {{ row['rockT25'] }}
+        </div>
+    {% endfor %}
+{% endblock %}

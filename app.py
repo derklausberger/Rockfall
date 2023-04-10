@@ -2,6 +2,7 @@ import base64
 import io
 import mpld3
 import os
+import json
 
 from flask import Flask, render_template, Response
 from flask_sqlalchemy import SQLAlchemy
@@ -12,12 +13,11 @@ from matplotlib import dates as mdates
 basedir = os.path.abspath(os.path.dirname(__file__))
 template_dir = os.path.abspath('src/templates')
 
+# create the app
+app = Flask(__name__, template_folder=template_dir)
 
 # create the extension
 db = SQLAlchemy()
-
-# create the app
-app = Flask(__name__, template_folder=template_dir)
 
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -37,42 +37,31 @@ with app.app_context():
 
 @app.route('/')
 def index():
-	crackmeter_data = db.session.query(CrackmeterDistance).all()
-	return render_template('/index.html', data=crackmeter_data)
-
-
-def on_plot_hover(event):
-    # Iterating over each data member plotted
-    for curve in plot.get_lines():
-        # Searching which data member corresponds to current mouse position
-        if curve.contains(event)[0]:
-            print("over %s" % curve.get_gid())
-
+	measurements = db.session.query(Measurements).all()
+	return render_template('/index.html', data=measurements)
 
 @app.route('/plot')
 def output_plot():
-	fig, ax = plt.subplots()
-    
-	dateTimes = [d.dateTime for d in db.session.query(CrackmeterDistance).all()]
-	y = [d.distance for d in db.session.query(CrackmeterDistance).all()]
-	
-	
-	#plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=5))
-	plt.plot_date(dateTimes, y)
-	plt.gcf().autofmt_xdate()
+	#crack distance datetimes
+	dt = [e.dateTime for e in db.session.query(Measurements).all()]
+	cdy = [e.distance for e in db.session.query(Measurements).all()]
 
-	plt.xlabel("Date")
-	plt.ylabel("Distance in mm")
+	#rock temperature datetimes
+	#rtdt = [e.dateTime for e in db.session.query(Measurements).all()]
+	rt25y = [e.rockT25 for e in db.session.query(Measurements).all()]
+	rt50y = [e.rockT50 for e in db.session.query(Measurements).all()]
+	rt75y = [e.rockT75 for e in db.session.query(Measurements).all()]
+	sty = [e.sensorT for e in db.session.query(Measurements).all()]
 
-	plt.title("Crackmeter Distances") 
-	
-	try:
-		mpld3.save_html(fig, "src/templates/plot.html")
-	except FileNotFoundError:
-		print("File not found.")
-
-	return render_template('/plot.html')
-
+	return render_template(
+		'/plot.html',
+		dt=dt,
+		cdy=json.loads(json.dumps(cdy)),
+		rt25y=json.loads(json.dumps(rt25y)),
+		rt50y=json.loads(json.dumps(rt50y)),
+		rt75y=json.loads(json.dumps(rt75y)),
+		sty=json.loads(json.dumps(sty))
+	)
 
 if __name__ == '__main__':
 	app.run(port=5000)
