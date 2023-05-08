@@ -3,15 +3,16 @@ import json
 import src.data.data_classes as dc
 import src.import_csv as ic
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-template_dir = os.path.abspath('src/templates')
-
+template_dir = os.path.abspath('src/html/')
+static_dir = os.path.abspath('res/')
 # create the app
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+
 
 # create the extension
 db = SQLAlchemy()
@@ -38,7 +39,18 @@ with app.app_context():
 @app.route('/')
 def index():
 	measurements = db.session.query(Measurements).all()
-	return render_template('/index.html', data=measurements)
+	return render_template('index.html', data=measurements)
+
+from werkzeug.utils import secure_filename
+
+@app.route('/upload') #, methods='POST')
+def upload():
+    files = request.files.getlist('files')
+    for file in files:
+        fn = secure_filename(file.filename)
+        file.save(os.path.join("./static/upload", fn))  # replace FILES_DIR with your own directory
+    #return redirect('/')  # change to redirect to your own url
+    return render_template("upload.html")
 
 @app.route('/plot')
 def output_plot():
