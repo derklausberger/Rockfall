@@ -10,13 +10,18 @@ from flask_sqlalchemy import SQLAlchemy
     db.Column('sensorT', db.Float)
 )"""
 
-class Measurements(db.Model):
-    dateTime = db.Column(db.DateTime(timezone=True), primary_key=True)
-    distance = db.Column(db.Float)
-    rockT25 = db.Column(db.Float)
-    rockT50 = db.Column(db.Float)
-    rockT75 = db.Column(db.Float)
-    sensorT = db.Column(db.Float)
+def setup_db(db):
+    class Measurements(db.Model):
+        dateTime = db.Column(db.DateTime(timezone=True), primary_key=True)
+        distance = db.Column(db.Float)
+        rockT25 = db.Column(db.Float)
+        rockT50 = db.Column(db.Float)
+        rockT75 = db.Column(db.Float)
+        sensorT = db.Column(db.Float)
 
-db.drop_all()
-db.create_all()
+    db.drop_all()
+    db.create_all()
+
+    db.session.query(Measurements).delete()
+
+    return Measurements

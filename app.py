@@ -1,14 +1,11 @@
-import base64
-import io
-import mpld3
 import os
 import json
+import src.data.data_classes as dc
+import src.import_csv as ic
 
-from flask import Flask, render_template, Response
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
-from matplotlib import pyplot as plt
-from matplotlib import dates as mdates
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 template_dir = os.path.abspath('src/templates')
@@ -28,11 +25,14 @@ db.init_app(app)
 with app.app_context():
 	db.drop_all()
 
-	with open("src/data/data_classes.py") as f:
-		exec(f.read())
+	#with open("src/data/data_classes.py") as f:
+	#	exec(f.read())
+	Measurements = dc.setup_db(db)
 	
-	with open("src/import_csv.py") as f:
-		exec(f.read())
+	#with open("src/import_csv.py") as f:
+	#	exec(f.read())
+
+	ic.import_db(db, Measurements)
 	
 
 @app.route('/')

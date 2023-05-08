@@ -2,7 +2,7 @@ import openpyxl
 from datetime import datetime
 
 #import crackmeterDistance data
-def import_crackmeterDistance():
+def import_crackmeterDistance(db, Measurements):
     wookbook = openpyxl.load_workbook("Crackmeter_distance_data.xlsx")
     ws = wookbook.active
 
@@ -30,7 +30,7 @@ def import_crackmeterDistance():
 
 
 #import rockTemp data
-def import_rockTemp():
+def import_rockTemp(db, Measurements):
     wookbook = openpyxl.load_workbook("Rock_Temp_data.xlsx")
     ws = wookbook.active
 
@@ -60,7 +60,6 @@ def import_rockTemp():
 
     db.session.commit()
 
-db.session.query(Measurements).delete()
-
-import_crackmeterDistance()
-import_rockTemp()
+def import_db(db, Measurements):
+    import_crackmeterDistance(db, Measurements)
+    import_rockTemp(db, Measurements)

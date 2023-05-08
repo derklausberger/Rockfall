@@ -38,7 +38,6 @@ pyOpenSSL @ file:///opt/conda/conda-bld/pyopenssl_1643788558760/work
 pyparsing==3.0.9
 PySocks @ file:///C:/ci/pysocks_1605307512533/work
 python-dateutil==2.8.2
-pywin32==305.1
 requests @ file:///C:/ci/requests_1657735342357/work
 ruamel.yaml @ file:///C:/b/abs_30ee5qbthd/croot/ruamel.yaml_1666304562000/work
 ruamel.yaml.clib @ file:///C:/b/abs_aarblxbilo/croot/ruamel.yaml.clib_1666302270884/work
