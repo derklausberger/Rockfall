@@ -15,9 +15,11 @@ def import_file(db, Measurements, filename, filetype: FileType):
     wb = openpyxl.load_workbook(filename)
     
     print(wb.sheetnames)
-    #for sheet in wb.sheetnames:
-    if True:
-        sheet = "Brezno"
+    for sheet in wb.sheetnames:
+    #uncomment for alg testing
+    #if True:
+        #uncomment for alg testing
+        #sheet = "Brezno"
         ws = wb[sheet]
         for row in ws.iter_rows(2, 4400):#,ws.max_row):# 
             print(row)

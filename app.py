@@ -37,7 +37,7 @@ with app.app_context():
 	#ic.import_db(db, Measurements)
 
 
-	#testing cycles algorithm
+	#uncomment for testing cycles algorithm
 	#ic.import_file(db, Measurements, "AirTemp.xlsx", ic.FileType["AirTemp"])
 	#pilotCases = [e.pilotCase for e in db.session.query(Measurements).group_by(Measurements.pilotCase).all()]
 	
