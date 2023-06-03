@@ -12,16 +12,31 @@ from flask_sqlalchemy import SQLAlchemy
 
 def setup_db(db):
     class Measurements(db.Model):
+        pilotCase = db.Column(db.String, primary_key = True)
         dateTime = db.Column(db.DateTime(timezone=True), primary_key=True)
-        distance = db.Column(db.Float)
+        
+        airHumidity = db.Column(db.Float)
+        
+        airTemp = db.Column(db.Float)
+
+        crackmeterDistance = db.Column(db.Float)
+        
+        rainfall = db.Column(db.Float)
+
+        TRockSurface_A54C8C = db.Column(db.Float)
+        TRockSurface_A54C8D = db.Column(db.Float)
+        
         rockT25 = db.Column(db.Float)
         rockT50 = db.Column(db.Float)
         rockT75 = db.Column(db.Float)
         sensorT = db.Column(db.Float)
 
+
+
+
+    # uncomment to insert---------------
     db.drop_all()
     db.create_all()
-
     db.session.query(Measurements).delete()
 
     return Measurements

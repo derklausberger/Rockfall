@@ -5,19 +5,51 @@
 {% endblock %}
 
 {% block content%}
-  <div class="file-upload">
-    <div class="image-upload-wrap">
-      <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
+  <form method="POST" action = "/upload" enctype="multipart/form-data" class="file-upload">
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Drag & Drop your AirHumidity data here:</label>
+      <input name="AirHumidity" class="form-control" type="file">
+    </div>
+
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Drag & Drop your AirTemp data here:</label>
+      <input name="AirTemp" class="form-control" type="file">
+    </div>
+
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Drag & Drop your CrackmeterDistance data here:</label>
+      <input name="CrackmeterDistance" class="form-control" type="file">
+    </div>
+
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Drag & Drop your Rainfall data here:</label>
+      <input name="Rainfall" class="form-control" type="file">
+    </div>
+
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Drag & Drop your RockSurface data here:</label>
+      <input name="RockSurface" class="form-control" type="file">
+    </div>
+
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Drag & Drop your RockTemp data here:</label>
+      <input name="RockTemp" class="form-control" type="file">
+    </div>
+
+    <!-- not working, but idk why
+      
+      <div class="mb-3 image-upload-wrap">
       <div class="drag-text">
         <h3>Drag and drop your file(s)</h3>
       </div>
-    </div>
-    <div class="file-upload-content">
-      <img class="file-upload-image" src="#" alt="your image" />
-      <div class="image-title-wrap">
-        <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
-      </div>
-    </div>
-    <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">UPLOAD</button>
-  </div>
+      <input class="file-upload-input form-control" name="CrackmeterDistance" type='file'/>
+    </div>    
+  -->
+    <br>
+    <button class="file-upload-btn" type="submit">UPLOAD</button>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{url_for('static', filename='js/upload.js')}}"></script>
 {% endblock %}

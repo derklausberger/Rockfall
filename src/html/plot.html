@@ -6,113 +6,145 @@
 
 
 {% block content %}
-   <div class="row">
-      <div class="col-md-4"><!-- form/results will go here --></div>
-      <div class="col-md-8">
-         <canvas id="chart" width="1000" height="1000"></canvas>
+   <ul class="nav nav-tabs" id="pilot-case-nav" role="tablist"></ul>
+
+   <!--<div class="row">
+      <div class="col-md-4"><!-- form/results will go here -></div>
+      <div class="col-md-8">-->
+   <div class="tab-content" id="charts-tab-content">
+      <!--<div class="tab-pane fade show active" id="Brno" role="tabpanel" aria-labelledby="Brno-tab">
+         <canvas id="Brno-chart" width="1000" height="1000"></canvas>
       </div>
+      <div class="tab-pane fade" id="pc2" role="tabpanel" aria-labelledby="pc2-tab">
+         <p>Seas</p>
+      </div>-->
    </div>
 {% endblock %}
 
 {% block scripts %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+   
+   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 
    <script>
-    console.log("hallo")
-      var chart = new Chart(document.getElementById('chart').getContext("2d"), {
-         type: 'line',
-         data: {
-            labels: [
-               {% for item in dt %}
-                  "{{ item }}",
-               {% endfor %}
-            ],
-            datasets: [
-               {
-                  label: 'CrackmeterDistance',
+      var pilotCaseNav = document.getElementById("pilot-case-nav")
+      var chartsDiv = document.getElementById("charts-tab-content")
+
+      var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+      }
+      
+      {% for pc, pc_data in data.items() %}
+         // pilot case data
+         pc = "{{ pc }}"
+         console.log("{{ pc_data }}")
+
+         //append the tab for the pilot case
+         var li = document.createElement("li")
+         li.className = "nav-item"
+         li.role = "presentation"
+
+         var btn = document.createElement("button")
+         btn.className = "nav-link"
+         btn.textContent = pc
+         btn.id = pc + "-tab"
+         btn.setAttribute("data-bs-toggle", "tab")
+         btn.setAttribute("data-bs-target", "#" + pc)
+         btn.setAttribute("type", "button")
+         btn.setAttribute("role", "tab")
+         btn.setAttribute("aria-controls", pc)
+         btn.setAttribute("aria-selected", false)
+
+         li.append(btn)
+         pilotCaseNav.append(li)
+
+         //append the chart for the pilot case
+         var chartDiv = document.createElement("div")
+         chartDiv.classList.add("tab-pane", "fade")
+         chartDiv.id = pc
+         chartDiv.role = "tabpanel"
+         chartDiv.setAttribute("aria-labelledby", pc + "-tab")
+
+         var chartCanvas = document.createElement("canvas")
+         chartCanvas.id = pc + "-chart"
+         chartDiv.style.width = "500px"
+         chartDiv.style.height = "400px"
+
+         chartDiv.append(chartCanvas)
+         chartsDiv.append(chartDiv)
+
+         lines = []
+
+         {% for label, data in pc_data.items() if (label != "dt") %}
+            lines.push({
+               label: "{{ label }}",
                   data: [
-                     {% for item in cdy %}
+                     {% for item in data %}
                         {{ item if item is not none }},
                      {% endfor %}
                   ],
-                  backgroundColor: '#90ee90',
-                  borderColor: ['green'],
+                  backgroundColor: dynamicColors(),
+                  borderColor: dynamicColors(),
                   borderWidth: 1,
                   spanGaps: true,
-                  yAxisID: 'cdY'
-               },
-               {
-                  label: 'RockTemp25',
-                  data: [
-                     {% for item in rt25y %}
-                        {{ item if item is not none }},
-                     {% endfor %}
-                  ],
-                  backgroundColor: '#add8e6',
-                  borderColor: ['blue'],
-                  borderWidth: 1,
-                  spanGaps: true,
-                  yAxisID: 'rt25Y'
-               },
-               {
-                  label: 'RockTemp50',
-                  data: [
-                     {% for item in rt50y %}
-                        {{ item if item is not none }},
-                     {% endfor %}
-                  ],
-                  backgroundColor: '#FFCCCB',
-                  borderColor: ['red'],
-                  borderWidth: 1,
-                  spanGaps: true,
-                  yAxisID: 'rt50Y'
-               }
-            ],
-         },
-         options: {
-            plugins: {
-               title: {
-                  text: 'chart title',
-                  display: true
-               }
+                  yAxisID: 'cd'
+            })
+         
+         {% endfor %}
+
+         var chart = new Chart(chartCanvas.getContext("2d"), {
+            type: 'line',
+            data: {
+               labels: [
+                  {% for item in pc_data['dt'] %}
+                     "{{ item }}",
+                  {% endfor %}
+               ],
+               datasets: lines,
             },
-            scales: {
-               x: {
-                  type: 'time',
-                  time: {
-                     tooltipFormat: 'dd.MM.yy HH:mm',
-                     displayFormats: {
-                        day: 'dd.MM yy',
-                        minute: 'dd.MMM yy HH:mm',
-                        hour: 'dd.MMM yy hha'
-                     }
-                  },
+            options: {
+               plugins: {
                   title: {
-                     display: true,
-                     text: 'Date'
+                     text: 'chart title',
+                     display: true
                   }
                },
-               /*y: {
-                  display: false,
-                  type: 'linear'
-               }*/
-               cdY: {
-                  position: 'left',
-                  display: false
-               },
-               rt25Y: {
-                  position: 'left',
-                  display: false
-               },
-               rt50Y: {
-                  position: 'left',
-                  display: false
+               scales: {
+                  x: {
+                     type: 'time',
+                     time: {
+                        tooltipFormat: 'dd.MM.yy HH:mm',
+                        displayFormats: {
+                           day: 'dd.MM yy',
+                           minute: 'dd.MMM yy HH:mm',
+                           hour: 'dd.MMM yy hha'
+                        }
+                     },
+                     title: {
+                        display: true,
+                        text: 'Date'
+                     }
+                  },
+                  cd: {
+                     position: 'left',
+                     display: false
+                  }
                }
             }
-         }
-      });
+         });
+      {% endfor %}
+
+      var active_tab = pilotCaseNav.firstChild.firstChild
+      active_tab.classList.add("active")
+      active_tab.setAttribute("aria-selected", true)
+
+      var active_div = document.getElementById(active_tab.id.slice(0, -4))
+      active_div.classList.add("show", "active")
    </script>
 {% endblock %}

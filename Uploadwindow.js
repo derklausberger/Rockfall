@@ -1,4 +1,4 @@
-function readURL(input) {
+function readURLa(input) {
   if (input.files && input.files[0]) {
 
     var reader = new FileReader();
@@ -19,7 +19,7 @@ function readURL(input) {
   }
 }
 
-function removeUpload() {
+function removeUploada() {
   $('.file-upload-input').replaceWith($('.file-upload-input').clone());
   $('.file-upload-content').hide();
   $('.image-upload-wrap').show();
