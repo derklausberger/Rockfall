@@ -10,8 +10,9 @@ from flask_sqlalchemy import SQLAlchemy
     db.Column('sensorT', db.Float)
 )"""
 
-def setup_db(db):
-    class Measurements(db.Model):
+db = SQLAlchemy()
+
+class Measurements(db.Model):
         pilotCase = db.Column(db.String, primary_key = True)
         dateTime = db.Column(db.DateTime(timezone=True), primary_key=True)
         
@@ -31,9 +32,7 @@ def setup_db(db):
         rockT75 = db.Column(db.Float)
         sensorT = db.Column(db.Float)
 
-
-
-
+def setup_db(db):
     # uncomment to insert---------------
     db.drop_all()
     db.create_all()

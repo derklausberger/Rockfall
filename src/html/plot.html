@@ -43,7 +43,6 @@
       {% for pc, pc_data in data.items() %}
          // pilot case data
          pc = "{{ pc }}"
-         console.log("{{ pc_data }}")
 
          //append the tab for the pilot case
          var li = document.createElement("li")
@@ -81,24 +80,47 @@
 
          lines = []
 
-         {% for label, data in pc_data.items() if (label != "dt") %}
-            lines.push({
-               label: "{{ label }}",
-                  data: [
-                     {% for item in data %}
-                        {{ item if item is not none }},
-                     {% endfor %}
-                  ],
-                  backgroundColor: dynamicColors(),
-                  borderColor: dynamicColors(),
-                  borderWidth: 1,
-                  spanGaps: true,
-                  yAxisID: 'cd'
-            })
-         
+         {% for label, data in pc_data.items() if (label != "dt" and label != "ftc") %}
+            if ("{{ data }}".replace(/None|,|\[|\]|\s/g,'').length > 0) {
+               lines.push({
+                  label: "{{ label }}",
+                     data: [
+                        {% for item in data %}
+                           {{ item if item is not none }},
+                        {% endfor %}
+                     ],
+                     backgroundColor: dynamicColors(),
+                     borderColor: dynamicColors(),
+                     borderWidth: 1,
+                     spanGaps: true,
+                     yAxisID: 'cd'
+               })
+            }
          {% endfor %}
 
-         var chart = new Chart(chartCanvas.getContext("2d"), {
+         ftc = [[43, 50]]
+         var backgroundColorRange = {
+            id: "backgroundColorRange",
+            beforeDatasetDraw(chart, args, pluginOptios) {
+               const { ctx, data, chartArea: {top, bottom, left, right, width, height},
+                  scales: {x, y} } = chart;
+
+               ctx.save();
+               ctx.fillStyle = 'rgba(200,200,200,0.8)';
+               //for (cycle of ftc) {
+               var begin = new Date(data.labels[10])
+               var end
+               console.log(date)
+               var xAxis = x.getPixelForValue(date.getTime())
+               var yAxis = x.getPixelForValue() - xAxis
+
+               ctx.fillRect(xAxis, top, yAxis, height);
+               //}
+            }
+         }
+
+         var ctx = chartCanvas.getContext("2d")
+         var config = {
             type: 'line',
             data: {
                labels: [
@@ -112,7 +134,11 @@
                plugins: {
                   title: {
                      text: 'chart title',
-                     display: true
+                     display: false
+                  },
+                  legend: {
+                     position: "right",
+                     align: "middle"
                   }
                },
                scales: {
@@ -135,9 +161,17 @@
                      position: 'left',
                      display: false
                   }
+               },
+               elements: {
+                  point: {
+                     radius: 0 // default to disabled in all datasets
+                  }
                }
-            }
-         });
+            },
+            plugins: [backgroundColorRange]
+         }
+
+         var chart = new Chart(ctx, config)
       {% endfor %}
 
       var active_tab = pilotCaseNav.firstChild.firstChild

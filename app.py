@@ -28,7 +28,9 @@ db.init_app(app)
 with app.app_context():
 	#with open("src/data/data_classes.py") as f:
 	#	exec(f.read())
-	Measurements = dc.setup_db(db)
+	Measurements = dc.Measurements
+
+	#dc.setup_db(db)
 	
 	#with open("src/import_csv.py") as f:
 	#	exec(f.read())
