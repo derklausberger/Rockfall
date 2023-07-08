@@ -1,1 +1,0 @@
-# Defines Forms (login, register)
