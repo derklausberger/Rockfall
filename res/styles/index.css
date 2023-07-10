@@ -255,3 +255,8 @@ body {
   border: 0;
   transition: all .2s ease;
 }
+
+div#loading {
+  display: none;
+  cursor: wait;
+  }

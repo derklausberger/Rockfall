@@ -1,38 +1,43 @@
 {% extends "base.html" %}
 
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="../../res/styles/upload.css" type="text/css">
+{% endblock %}
+
 {% block title %}
     Upload
 {% endblock %}
 
-{% block content%}
+{% block content %}
   <form method="POST" action = "/upload" enctype="multipart/form-data" class="file-upload">
     <div class="mb-3">
-      <label for="formFile" class="form-label">Drag & Drop your AirHumidity data here:</label>
+      <label for="AirHumidity" class="form-label">Drag & Drop your AirHumidity data here:</label>
       <input name="AirHumidity" class="form-control" type="file">
     </div>
 
     <div class="mb-3">
-      <label for="formFile" class="form-label">Drag & Drop your AirTemp data here:</label>
+      <label for="AirTemp" class="form-label">Drag & Drop your AirTemp data here:</label>
       <input name="AirTemp" class="form-control" type="file">
     </div>
 
     <div class="mb-3">
-      <label for="formFile" class="form-label">Drag & Drop your CrackmeterDistance data here:</label>
+      <label for="CrackmeterDistance" class="form-label">Drag & Drop your CrackmeterDistance data here:</label>
       <input name="CrackmeterDistance" class="form-control" type="file">
     </div>
 
     <div class="mb-3">
-      <label for="formFile" class="form-label">Drag & Drop your Rainfall data here:</label>
+      <label for="Rainfall" class="form-label">Drag & Drop your Rainfall data here:</label>
       <input name="Rainfall" class="form-control" type="file">
     </div>
 
     <div class="mb-3">
-      <label for="formFile" class="form-label">Drag & Drop your RockSurface data here:</label>
+      <label for="RockSurface" class="form-label">Drag & Drop your RockSurface data here:</label>
       <input name="RockSurface" class="form-control" type="file">
     </div>
 
     <div class="mb-3">
-      <label for="formFile" class="form-label">Drag & Drop your RockTemp data here:</label>
+      <label for="RockTemp" class="form-label">Drag & Drop your RockTemp data here:</label>
       <input name="RockTemp" class="form-control" type="file">
     </div>
 
@@ -46,7 +51,7 @@
     </div>    
   -->
     <br>
-    <button class="file-upload-btn" type="submit">UPLOAD</button>
+    <button class="file-upload-btn" type="submit" onclick="loading();">UPLOAD</button>
   </form>
 {% endblock %}
 

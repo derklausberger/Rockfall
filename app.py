@@ -28,9 +28,9 @@ db.init_app(app)
 with app.app_context():
 	#with open("src/data/data_classes.py") as f:
 	#	exec(f.read())
-	Measurements = dc.Measurements
+	Measurements = dc.createMeasurementsModel(db)
 
-	#dc.setup_db(db)
+	dc.setup_db(db, Measurements)
 	
 	#with open("src/import_csv.py") as f:
 	#	exec(f.read())
@@ -57,7 +57,6 @@ def index():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-	print("hallo")
 	if request.method == 'POST':
 		for formname, file in request.files.items():
 			if not file.filename == '':
@@ -80,10 +79,13 @@ def output_plot():
 		
 		#air temperature
 		at = [e.airTemp for e in db.session.query(Measurements).filter_by(pilotCase=pc).all()]
+		
+		cycles = (get_freeze_thaw_cycles(dt, at) if any(at) else [])
+		print("app", cycles)
 
 		#air humidity
 		ah = [e.airHumidity for e in db.session.query(Measurements).filter_by(pilotCase=pc).all()]
-
+		
 		#crack distance
 		cd = [e.crackmeterDistance for e in db.session.query(Measurements).filter_by(pilotCase=pc).all()]
 
@@ -103,16 +105,17 @@ def output_plot():
 		data.update(
 			{pc: {
 				"dt": dt,
-				"Air temperature": at,
-				"Air humidity": ah,
-				"Crackmeter distance": cd,
-				"Rainfall": rf,
-				"Temp rock surface A54C8C": trsA54C8C,
-				"Temp rock surface A54C8D": trsA54C8D,
-				"Rock T-25 cm": rt25,
-				"Rock T-50 cm": rt50,
-				"Rock T-75 cm": rt75,
-				"Sensor T": st
+				"Air temperature": [at, "degr"],
+				"Air humidity": [ah, "perc"],
+				"Crackmeter distance": [cd, "mm"],
+				"Rainfall": [rf, "mm"],
+				"Temp rock surface A54C8C": [trsA54C8C, "degr"],
+				"Temp rock surface A54C8D": [trsA54C8D, "degr"],
+				"Rock T-25 cm": [rt25, "degr"],
+				"Rock T-50 cm": [rt50, "degr"],
+				"Rock T-75 cm": [rt75, "degr"],
+				"Sensor T": [st, "degr"],
+				"ftc": cycles
 			}}
 		)
 

@@ -6,7 +6,7 @@ def get_freeze_thaw_cycles(datetimes: List[datetime], air_temp: List[float]) -> 
 
     cooling_begin = freezing_begin = warming_begin = thawing_begin = None
 
-    print(air_temp)
+    #print(air_temp)
     for idx, x in enumerate(air_temp):
         if (x):
             if (x > 0):

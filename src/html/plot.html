@@ -72,8 +72,7 @@
 
          var chartCanvas = document.createElement("canvas")
          chartCanvas.id = pc + "-chart"
-         chartDiv.style.width = "500px"
-         chartDiv.style.height = "400px"
+         chartDiv.style.width = ""
 
          chartDiv.append(chartCanvas)
          chartsDiv.append(chartDiv)
@@ -81,11 +80,11 @@
          lines = []
 
          {% for label, data in pc_data.items() if (label != "dt" and label != "ftc") %}
-            if ("{{ data }}".replace(/None|,|\[|\]|\s/g,'').length > 0) {
+            if (containsNotNoneValues("{{ data[0] }}")) {
                lines.push({
                   label: "{{ label }}",
                      data: [
-                        {% for item in data %}
+                        {% for item in data[0] %}
                            {{ item if item is not none }},
                         {% endfor %}
                      ],
@@ -93,29 +92,59 @@
                      borderColor: dynamicColors(),
                      borderWidth: 1,
                      spanGaps: true,
-                     yAxisID: 'cd'
+                     yAxisID: "{{data[1]}}"
                })
             }
          {% endfor %}
-
-         ftc = [[43, 50]]
+         
          var backgroundColorRange = {
-            id: "backgroundColorRange",
+            id: "backgroundColorRange",   
             beforeDatasetDraw(chart, args, pluginOptios) {
-               const { ctx, data, chartArea: {top, bottom, left, right, width, height},
-                  scales: {x, y} } = chart;
+               if (containsNotNoneValues("{{ pc_data['ftc'] }}")) {
+                  const { ctx, data, chartArea: {top, bottom, left, right, width, height},
+                     scales: {x, y} } = chart;
 
-               ctx.save();
-               ctx.fillStyle = 'rgba(200,200,200,0.8)';
-               //for (cycle of ftc) {
-               var begin = new Date(data.labels[10])
-               var end
-               console.log(date)
-               var xAxis = x.getPixelForValue(date.getTime())
-               var yAxis = x.getPixelForValue() - xAxis
+                  ctx.save();
+                  
+                  {% for item in pc_data['ftc'] %}
+                     var cb_date = new Date("{{ item['cb'] }}")
+                     var fb_date = new Date("{{ item['fb'] }}")
+                     var wb_date = new Date("{{ item['wb'] }}")
+                     var tb_date = new Date("{{ item['tb'] }}")
 
-               ctx.fillRect(xAxis, top, yAxis, height);
-               //}
+                     var cb_x = x.getPixelForValue(cb_date.getTime())
+                     var fb_x = x.getPixelForValue(fb_date.getTime())
+                     var wb_x = x.getPixelForValue(wb_date.getTime())
+                     var tb_x = x.getPixelForValue(tb_date.getTime())
+
+
+                     var fb_dist = fb_x - cb_x
+                     var wb_dist = wb_x - fb_x
+                     var tb_dist = tb_x - wb_x
+
+                     
+                     ctx.fillStyle = 'rgba(116, 85, 155, 0.4)';
+                     ctx.fillRect(cb_x, top, fb_dist, height);
+                     console.log(cb_x)
+
+                     ctx.fillStyle = 'rgba(112, 184, 74, 0.4)';
+                     ctx.fillRect(fb_x, top, wb_dist, height);
+
+                     ctx.fillStyle = 'rgba(214, 107, 63, 0.4)';
+                     ctx.fillRect(wb_x, top, tb_dist, height);
+
+                     ctx.restore();
+
+                     addEvent(chartCanvas, 'click', function (event) {
+                        var rect = event.target.getBoundingClientRect();
+                        var clickX = event.clientX - rect.left;
+
+                        if (clickX > cb_x && clickX < tb_x) {
+                           console.log(cb_x)
+                        }
+                     })
+                  {% endfor %}                  
+               }
             }
          }
 
@@ -133,7 +162,7 @@
             options: {
                plugins: {
                   title: {
-                     text: 'chart title',
+                     text: "{{pc}}",
                      display: false
                   },
                   legend: {
@@ -157,10 +186,27 @@
                         text: 'Date'
                      }
                   },
-                  cd: {
+                  degr: {
                      position: 'left',
-                     display: false
-                  }
+                     title: {
+                        display: true,
+                        text: '°C'
+                     }
+                  },
+                  mm: {
+                     position: 'left',
+                     title: {
+                        display: true,
+                        text: 'mm'
+                     }
+                  },
+                  perc: {
+                     position: 'left',
+                     title: {
+                        display: true,
+                        text: '%'
+                     }
+                  },
                },
                elements: {
                   point: {
@@ -180,5 +226,21 @@
 
       var active_div = document.getElementById(active_tab.id.slice(0, -4))
       active_div.classList.add("show", "active")
+
+      function containsNotNoneValues(string){
+         return string.replace(/None|,|\[|\]|\s/g,'').length > 0
+      }
+
+      function addEvent(obj, evType, fn) {
+         if (obj.addEventListener) {
+            obj.addEventListener(evType, fn, false);
+            return true;
+         } else if (obj.attachEvent) {
+            var r = obj.attachEvent("on" + evType, fn);
+            return r;
+         } else {
+            alert("Handler could not be attached");
+         }
+      }
    </script>
 {% endblock %}

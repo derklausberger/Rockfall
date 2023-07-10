@@ -20,8 +20,9 @@ def import_file(db, Measurements, filename, filetype: FileType):
     #if True:
         #uncomment for alg testing
         #sheet = "Brezno"
+        
         ws = wb[sheet]
-        for row in ws.iter_rows(2, 100):#,ws.max_row):# 
+        for row in ws.iter_rows(2, 20):#,ws.max_row):# 
             print(row)
             date = row[0].value
             if type(date) is str:
