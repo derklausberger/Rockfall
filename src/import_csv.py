@@ -78,3 +78,4 @@ def import_file(db, Measurements, filename, filetype: FileType):
 #def import_db(db, Measurements):
     #import_file(db, Measurements, "Crackmeter_distance_data.xlsx", FileType.CrackmeterDistance)
     #import_file(db, Measurements, "Rock_Temp_data.xlsx", FileType.RockTemp)
+

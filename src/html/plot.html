@@ -9,7 +9,7 @@
    <ul class="nav nav-tabs" id="pilot-case-nav" role="tablist"></ul>
 
    <!--<div class="row">
-      <div class="col-md-4"><!-- form/results will go here -></div>
+      <div class="col-md-4"> form/results will go here -></div>
       <div class="col-md-8">-->
    <div class="tab-content" id="charts-tab-content">
       <!--<div class="tab-pane fade show active" id="Brno" role="tabpanel" aria-labelledby="Brno-tab">
@@ -19,6 +19,21 @@
          <p>Seas</p>
       </div>-->
    </div>
+
+<!-- Table -->
+    <table>
+        <tr>
+            <th>Location</th>
+            <th>Temperature</th>
+        </tr>
+        {% for data in table_data %}
+        <tr>
+            <td>{{ data.location }}</td>
+            <td>{{ data.temperature }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
 {% endblock %}
 
 {% block scripts %}
@@ -243,4 +258,44 @@
          }
       }
    </script>
+
+    <script>
+       // Function to generate table HTML
+       function generateTableHTML(data) {
+          var tableHTML = '<table><tr><th>Date</th><th>Value</th></tr>';
+          for (var i = 0; i < data.length; i++) {
+             tableHTML += '<tr><td>' + data[i].location + '</td><td>' + data[i].temperature + '</td></tr>';
+          }
+          tableHTML += '</table>';
+          return tableHTML;
+       }
+       // Data from the server
+       var tableData = JSON.parse('{{ table_data | tojson }}');
+
+       // Generate table HTML
+       var tableHTML = generateTableHTML(tableData);
+
+       // Append table HTML to the element with ID "charts-tab-content"
+       var chartsDiv = document.getElementById('charts-tab-content');
+       chartsDiv.innerHTML = tableHTML;
+
+       /*{% for pc, pc_data in data.items() %}
+          // pilot case data
+          pc = "{{ pc }}"
+          console.log("{{ pc_data }}")
+
+          // append the table for the pilot case
+          var tableDiv = document.createElement("div");
+          tableDiv.classList.add("tab-pane", "fade");
+          tableDiv.id = pc;
+          tableDiv.role = "tabpanel";
+          tableDiv.setAttribute("aria-labelledby", pc + "-tab");
+
+          var tableHTML = generateTableHTML({{ pc_data|tojson }});
+          tableDiv.innerHTML = tableHTML;
+
+          chartsDiv.append(tableDiv);
+       {% endfor %}*/
+    </script>
+
 {% endblock %}
