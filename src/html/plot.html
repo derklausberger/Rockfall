@@ -7,32 +7,35 @@
 
 {% block content %}
    <ul class="nav nav-tabs" id="pilot-case-nav" role="tablist"></ul>
-
-   <!--<div class="row">
-      <div class="col-md-4"> form/results will go here -></div>
-      <div class="col-md-8">-->
    <div class="tab-content" id="charts-tab-content">
-      <!--<div class="tab-pane fade show active" id="Brno" role="tabpanel" aria-labelledby="Brno-tab">
-         <canvas id="Brno-chart" width="1000" height="1000"></canvas>
-      </div>
-      <div class="tab-pane fade" id="pc2" role="tabpanel" aria-labelledby="pc2-tab">
-         <p>Seas</p>
-      </div>-->
    </div>
+   <table id="ftc-table">
+      <thead>
+         <tr>
+            <th>Stage</th>
+            <th>Begin</th>
+            <th>End</th>
+            <th>Duration</th>
+         </tr>
+      </thead>
+      <tbody id="ftc-tbody">
+         <tr>
+            <td>Stage</td>
+         </tr>
 
-<!-- Table -->
-    <table>
-        <tr>
-            <th>Location</th>
-            <th>Temperature</th>
-        </tr>
-        {% for data in table_data %}
-        <tr>
-            <td>{{ data.location }}</td>
-            <td>{{ data.temperature }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+         <tr>
+            <td>Stage</td>
+         </tr>
+
+         <tr>
+            <td>Stage</td>
+         </tr>
+
+         <tr>
+            <td>Stage</td>
+         </tr>
+      </tbody>
+   </table>
 
 {% endblock %}
 
@@ -140,7 +143,6 @@
                      
                      ctx.fillStyle = 'rgba(116, 85, 155, 0.4)';
                      ctx.fillRect(cb_x, top, fb_dist, height);
-                     console.log(cb_x)
 
                      ctx.fillStyle = 'rgba(112, 184, 74, 0.4)';
                      ctx.fillRect(fb_x, top, wb_dist, height);
@@ -155,7 +157,21 @@
                         var clickX = event.clientX - rect.left;
 
                         if (clickX > cb_x && clickX < tb_x) {
-                           console.log(cb_x)
+                           console.log("hier")
+                           var new_body = document.createElement("tbody")
+
+                           new_body.append(
+                              createFTCRow("Cooling", cb_date, fb_date, fb_date - cb_date),
+                              createFTCRow("Freezing", fb_date, wb_date, wb_date - fb_date),
+                              createFTCRow("Thawing", wb_date, tb_date, tb_date - wb_date),
+                              createFTCRow("Warming", wb_date, null, null)
+                           )
+
+                           var ftc_table = document.getElementById("ftc-table")
+                           var old_body = document.getElementById("ftc-tbody")
+
+
+                           old_body.replaceWith(new_body)
                         }
                      })
                   {% endfor %}                  
@@ -257,45 +273,39 @@
             alert("Handler could not be attached");
          }
       }
-   </script>
 
-    <script>
-       // Function to generate table HTML
-       function generateTableHTML(data) {
-          var tableHTML = '<table><tr><th>Date</th><th>Value</th></tr>';
-          for (var i = 0; i < data.length; i++) {
-             tableHTML += '<tr><td>' + data[i].location + '</td><td>' + data[i].temperature + '</td></tr>';
-          }
-          tableHTML += '</table>';
-          return tableHTML;
-       }
-       // Data from the server
-       var tableData = JSON.parse('{{ table_data | tojson }}');
+      function createFTCRow(stage, begin, end, diff) {
+         var td1 = document.createElement("td")
+         td1.innerHTML = stage
 
-       // Generate table HTML
-       var tableHTML = generateTableHTML(tableData);
+         var td2 = document.createElement("td")
+         if (begin)
+            td2.innerHTML = begin.toLocaleString()
 
-       // Append table HTML to the element with ID "charts-tab-content"
-       var chartsDiv = document.getElementById('charts-tab-content');
-       chartsDiv.innerHTML = tableHTML;
+         var td3 = document.createElement("td")
+         if (end)
+            td3.innerHTML = end.toLocaleString()
 
-       /*{% for pc, pc_data in data.items() %}
-          // pilot case data
-          pc = "{{ pc }}"
-          console.log("{{ pc_data }}")
+         var td4 = document.createElement("td")
 
-          // append the table for the pilot case
-          var tableDiv = document.createElement("div");
-          tableDiv.classList.add("tab-pane", "fade");
-          tableDiv.id = pc;
-          tableDiv.role = "tabpanel";
-          tableDiv.setAttribute("aria-labelledby", pc + "-tab");
+         var daysDifference = Math.floor(diff/1000/60/60/24);
+         diff -= daysDifference*1000*60*60*24
 
-          var tableHTML = generateTableHTML({{ pc_data|tojson }});
-          tableDiv.innerHTML = tableHTML;
+         var hoursDifference = Math.floor(diff/1000/60/60);
+         diff -= hoursDifference*1000*60*60
 
-          chartsDiv.append(tableDiv);
-       {% endfor %}*/
+         var minutesDifference = Math.floor(diff/1000/60);
+         diff -= minutesDifference*1000*60
+
+         td4.innerHTML = daysDifference + 'd ' +
+            hoursDifference + 'H ' + 
+            minutesDifference + 'm ';
+         
+         var tr = document.createElement("tr")
+         tr.append(td1, td2, td3, td4)
+
+         return tr
+      }
     </script>
 
 {% endblock %}

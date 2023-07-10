@@ -121,8 +121,7 @@ def output_plot():
 
 	return render_template(
 		'/plot.html',
-		data = data,
-		table_data=table_data
+		data = data
 	)
 
 """dt=dt,
