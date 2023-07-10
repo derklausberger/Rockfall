@@ -6,37 +6,49 @@
 
 
 {% block content %}
-   <ul class="nav nav-tabs" id="pilot-case-nav" role="tablist"></ul>
-   <div class="tab-content" id="charts-tab-content">
-   </div>
-   <table id="ftc-table">
-      <thead>
-         <tr>
-            <th>Stage</th>
-            <th>Begin</th>
-            <th>End</th>
-            <th>Duration</th>
-         </tr>
-      </thead>
-      <tbody id="ftc-tbody">
-         <tr>
-            <td>Stage</td>
-         </tr>
-
-         <tr>
-            <td>Stage</td>
-         </tr>
-
-         <tr>
-            <td>Stage</td>
-         </tr>
-
-         <tr>
-            <td>Stage</td>
-         </tr>
-      </tbody>
-   </table>
-
+   {% if data is not defined or data|length == 0 %}
+      <span>No data available</span>
+   {% else %}
+      <ul class="nav nav-tabs" id="pilot-case-nav" role="tablist"></ul>
+      <div class="tab-content" id="charts-tab-content">
+      </div>
+      <table id="ftc-table">
+         <thead>
+            <tr>
+               <th>Stage</th>
+               <th>Begin</th>
+               <th>End</th>
+               <th>Duration</th>
+            </tr>
+         </thead>
+         <tbody id="ftc-tbody">
+            <tr>
+               <td>Cooling</td>
+               <td>-</td>
+               <td>-</td>
+               <td>-</td>
+            </tr>
+            <tr>
+               <td>Freezing</td>
+               <td>-</td>
+               <td>-</td>
+               <td>-</td>
+            </tr>
+            <tr>
+               <td>Thawing</td>
+               <td>-</td>
+               <td>-</td>
+               <td>-</td>
+            </tr>
+            <tr>
+               <td>Warming</td>
+               <td>-</td>
+               <td>-</td>
+               <td>-</td>
+            </tr>
+         </tbody>
+      </table>
+   {% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -81,6 +93,23 @@
          li.append(btn)
          pilotCaseNav.append(li)
 
+         //append the time pickers for the pilot case
+         var begin = document.createElement("input")
+         begin.type = "datetime-local"
+         begin.value = "{{ pc_data['dt'][0] }}"
+         begin.min = "{{ pc_data['dt'][0] }}"
+         begin.max = "{{ pc_data['dt']|last }}"
+
+         var end = document.createElement("input")
+         end.type = "datetime-local"
+         console.log()
+         end.value = "{{ pc_data['dt']|last }}"
+         end.min = "{{ pc_data['dt'][0] }}"
+         end.max = "{{ pc_data['dt']|last }}"
+
+         chartsDiv.append(begin, end)
+
+
          //append the chart for the pilot case
          var chartDiv = document.createElement("div")
          chartDiv.classList.add("tab-pane", "fade")
@@ -94,31 +123,11 @@
 
          chartDiv.append(chartCanvas)
          chartsDiv.append(chartDiv)
-
-         lines = []
-
-         {% for label, data in pc_data.items() if (label != "dt" and label != "ftc") %}
-            if (containsNotNoneValues("{{ data[0] }}")) {
-               lines.push({
-                  label: "{{ label }}",
-                     data: [
-                        {% for item in data[0] %}
-                           {{ item if item is not none }},
-                        {% endfor %}
-                     ],
-                     backgroundColor: dynamicColors(),
-                     borderColor: dynamicColors(),
-                     borderWidth: 1,
-                     spanGaps: true,
-                     yAxisID: "{{data[1]}}"
-               })
-            }
-         {% endfor %}
          
          var backgroundColorRange = {
             id: "backgroundColorRange",   
             beforeDatasetDraw(chart, args, pluginOptios) {
-               if (containsNotNoneValues("{{ pc_data['ftc'] }}")) {
+               if (containsNotNoneValues({{ pc_data['ftc'] | tojson }})) {
                   const { ctx, data, chartArea: {top, bottom, left, right, width, height},
                      scales: {x, y} } = chart;
 
@@ -159,6 +168,7 @@
                         if (clickX > cb_x && clickX < tb_x) {
                            console.log("hier")
                            var new_body = document.createElement("tbody")
+                           new_body.id = "ftc-tbody"
 
                            new_body.append(
                               createFTCRow("Cooling", cb_date, fb_date, fb_date - cb_date),
@@ -178,22 +188,123 @@
                }
             }
          }
-
+      
          var ctx = chartCanvas.getContext("2d")
+         var config = createChartConfig({{ pc }}, {{ pc_data | tojson}}, 0, {{pc_data['dt'] | length}})
+         var chart = new Chart(ctx, config)
+
+         begin.onchange = end.onchange = function() {
+            let chart = Chart.getChart(pc + "-chart");
+            chart.destroy()
+
+            var begin_idx = {{pc_data['dt'] | tojson}}.findIndex(
+               function(date) {
+                  return new Date(date).toISOString() >= begin.value;
+               }
+            );
+
+            var end_idx = {{pc_data['dt'] | tojson}}.findIndex(
+               function(date) {
+                  return new Date(date).toISOString() >= end.value;
+               }
+            );
+
+            var ctx = chartCanvas.getContext("2d")
+            var config = createChartConfig({{ pc }}, {{ pc_data | tojson}}, begin_idx, end_idx)
+            chart = new Chart(ctx, config)
+         }
+      {% endfor %}
+
+      var active_tab = pilotCaseNav.firstChild.firstChild
+      active_tab.classList.add("active")
+      active_tab.setAttribute("aria-selected", true)
+
+      var active_div = document.getElementById(active_tab.id.slice(0, -4))
+      active_div.classList.add("show", "active")
+
+      function containsNotNoneValues(arr){
+         return arr.some(el => el !== null)
+      }
+
+      function addEvent(obj, evType, fn) {
+         if (obj.addEventListener) {
+            obj.addEventListener(evType, fn, false);
+            return true;
+         } else if (obj.attachEvent) {
+            var r = obj.attachEvent("on" + evType, fn);
+            return r;
+         } else {
+            alert("Handler could not be attached");
+         }
+      }
+
+      function createFTCRow(stage, begin, end, diff) {
+         var td1 = document.createElement("td")
+         td1.innerHTML = stage
+
+         var td2 = document.createElement("td")
+         if (begin)
+            td2.innerHTML = begin.toLocaleString()
+
+         var td3 = document.createElement("td")
+         if (end)
+            td3.innerHTML = end.toLocaleString()
+
+         var td4 = document.createElement("td")
+
+         var daysDifference = Math.floor(diff/1000/60/60/24);
+         diff -= daysDifference*1000*60*60*24
+
+         var hoursDifference = Math.floor(diff/1000/60/60);
+         diff -= hoursDifference*1000*60*60
+
+         var minutesDifference = Math.floor(diff/1000/60);
+         diff -= minutesDifference*1000*60
+
+         td4.innerHTML = daysDifference + 'd ' +
+            hoursDifference + 'H ' + 
+            minutesDifference + 'm ';
+         
+         var tr = document.createElement("tr")
+         tr.append(td1, td2, td3, td4)
+
+         return tr
+      }
+
+      function createChartConfig(pc, pc_data, begin, end) {
+         var  lines = []
+
+         for(let label in pc_data) {
+            var data = pc_data[label]
+            if (label != "dt" && label != "ftc") {
+               if (containsNotNoneValues(data[0])) {
+                  lines.push({
+                     label: label,
+                        data: data[0].slice(begin, end),
+                        backgroundColor: dynamicColors(),
+                        borderColor: dynamicColors(),
+                        borderWidth: 1,
+                        spanGaps: true,
+                        yAxisID: data[1]
+                  })
+                  console.log(data)
+               }
+            }
+         }
+
          var config = {
             type: 'line',
             data: {
-               labels: [
-                  {% for item in pc_data['dt'] %}
-                     "{{ item }}",
-                  {% endfor %}
-               ],
-               datasets: lines,
+               labels: pc_data['dt'].slice(begin, end).map(dateStr => {
+                  var date = new Date(dateStr)
+                  return new Date(date.getTime() + date.getTimezoneOffset() * 60000)
+               }),
+               datasets: lines
             },
             options: {
                plugins: {
                   title: {
-                     text: "{{pc}}",
+                     text: pc,
                      display: false
                   },
                   legend: {
@@ -248,63 +359,7 @@
             plugins: [backgroundColorRange]
          }
 
-         var chart = new Chart(ctx, config)
-      {% endfor %}
-
-      var active_tab = pilotCaseNav.firstChild.firstChild
-      active_tab.classList.add("active")
-      active_tab.setAttribute("aria-selected", true)
-
-      var active_div = document.getElementById(active_tab.id.slice(0, -4))
-      active_div.classList.add("show", "active")
-
-      function containsNotNoneValues(string){
-         return string.replace(/None|,|\[|\]|\s/g,'').length > 0
-      }
-
-      function addEvent(obj, evType, fn) {
-         if (obj.addEventListener) {
-            obj.addEventListener(evType, fn, false);
-            return true;
-         } else if (obj.attachEvent) {
-            var r = obj.attachEvent("on" + evType, fn);
-            return r;
-         } else {
-            alert("Handler could not be attached");
-         }
-      }
-
-      function createFTCRow(stage, begin, end, diff) {
-         var td1 = document.createElement("td")
-         td1.innerHTML = stage
-
-         var td2 = document.createElement("td")
-         if (begin)
-            td2.innerHTML = begin.toLocaleString()
-
-         var td3 = document.createElement("td")
-         if (end)
-            td3.innerHTML = end.toLocaleString()
-
-         var td4 = document.createElement("td")
-
-         var daysDifference = Math.floor(diff/1000/60/60/24);
-         diff -= daysDifference*1000*60*60*24
-
-         var hoursDifference = Math.floor(diff/1000/60/60);
-         diff -= hoursDifference*1000*60*60
-
-         var minutesDifference = Math.floor(diff/1000/60);
-         diff -= minutesDifference*1000*60
-
-         td4.innerHTML = daysDifference + 'd ' +
-            hoursDifference + 'H ' + 
-            minutesDifference + 'm ';
-         
-         var tr = document.createElement("tr")
-         tr.append(td1, td2, td3, td4)
-
-         return tr
+         return config
       }
     </script>
 

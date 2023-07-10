@@ -68,6 +68,13 @@ def upload():
 	
 	return render_template("upload.html")
 
+@app.route('/delete', methods=['POST'])
+def delete():
+	db.drop_all()
+	db.create_all()
+
+	return render_template("upload.html")
+
 @app.route('/plot')
 def output_plot():
 	pilotCases = [e.pilotCase for e in db.session.query(Measurements).group_by(Measurements.pilotCase).all()]

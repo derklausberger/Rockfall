@@ -34,7 +34,7 @@ def createMeasurementsModel(db):
 
 def setup_db(db, Measurements):
     # uncomment to insert---------------
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
     db.session.query(Measurements).delete()
 

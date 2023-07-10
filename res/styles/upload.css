@@ -3,7 +3,7 @@
   background-color: #ffffff;
   width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 20px 10px 20px ;
 }
 
 .file-upload-btn {
@@ -33,7 +33,42 @@
   transition: all .2s ease;
 }
 
-.file-upload-content {
+
+.file-delete {
+  background-color: #ffffff;
+  width: 600px;
+  margin: 0 auto;
+  padding: 0px 20px 20px 20px ;
+}
+
+.file-delete-btn {
+  width: 100%;
+  margin: 0;
+  color: #fff;
+  background: #ff474c;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  border-bottom: 4px solid #15824B;
+  transition: all .2s ease;
+  outline: none;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.file-delete-btn:hover {
+  background: red;
+  color: #ffffff;
+  transition: all .2s ease;
+  cursor: pointer;
+}
+
+.file-red-btn:active {
+  border: 0;
+  transition: all .2s ease;
+}
+
+.file-red-content {
   display: none;
   text-align: center;
 }
