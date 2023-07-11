@@ -48,6 +48,14 @@
             </tr>
          </tbody>
       </table>
+      <table id="clickedPointTable">
+         <thead>
+            <tr></tr>
+         </thead>
+         <tbody>
+            <tr></tr>
+         </tbody>
+      </table>
    {% endif %}
 {% endblock %}
 
@@ -324,6 +332,59 @@
                datasets: lines
             },
             options: {
+               onClick: function (event, elements) {
+                  if (elements.length > 0) {
+                     var clickedPoint = elements[0];
+                     var datasetIndex = clickedPoint.datasetIndex;
+                     var index = clickedPoint.index;
+                     var date = chart.data.labels[datasetIndex]
+                     //var label = chart.data.datasets[datasetIndex].label
+
+                     var table = document.getElementById("clickedPointTable")
+                     var thead = table.querySelector('thead')
+                     var tbody = table.querySelector('tbody')
+
+                     var newHeadTr = document.createElement("tr")
+                     var newBodyTr = document.createElement("tr")
+
+                     var thDate = document.createElement("th")
+                     thDate.innerHTML = "Date"
+                     newHeadTr.append(thDate)
+
+                     var thDate = document.createElement("td")
+                     thDate.innerHTML = new Date(pc_data["dt"][index]).toLocaleString()
+                     newBodyTr.append(thDate)
+
+                     for (var dataset in pc_data) {
+                        if (dataset != "dt" && dataset != "ftc") {
+                           var th = document.createElement("th")
+                           th.innerHTML = dataset
+                           console.log(dataset)
+                           newHeadTr.append(th)
+
+                           var td = document.createElement("td")
+                           if (pc_data[dataset][0][index] != null)
+                              td.innerHTML = pc_data[dataset][0][index]
+                           else
+                              td.innerHTML = "-"
+                           
+                           if (pc_data[dataset][1] == "degr")
+                              td.innerHTML += " °C"
+                           else if (pc_data[dataset][1] == "perc")
+                              td.innerHTML += " %"
+                           else
+                              td.innerHTML += " " + pc_data[dataset][1]
+                           newBodyTr.append(td)
+                        }
+                     }
+
+                     var oldHeadTr = thead.querySelector("tr")
+                     var oldBodyTr = tbody.querySelector("tr")
+
+                     thead.replaceChild(newHeadTr, oldHeadTr)
+                     tbody.replaceChild(newBodyTr, oldBodyTr)
+                  }
+               },
                plugins: {
                   title: {
                      text: pc,
