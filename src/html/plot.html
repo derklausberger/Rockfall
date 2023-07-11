@@ -12,36 +12,36 @@
       <ul class="nav nav-tabs" id="pilot-case-nav" role="tablist"></ul>
       <div class="tab-content" id="charts-tab-content">
       </div>
-      <table id="ftc-table">
+      <table id="ftc-table" class="table">
          <thead>
             <tr>
-               <th>Stage</th>
-               <th>Begin</th>
-               <th>End</th>
-               <th>Duration</th>
+               <th scope="col">Stage</th>
+               <th scope="col">Begin</th>
+               <th scope="col">End</th>
+               <th scope="col">Duration</th>
             </tr>
          </thead>
          <tbody id="ftc-tbody">
             <tr>
-               <td>Cooling</td>
+               <th scope="row">Cooling</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
             </tr>
             <tr>
-               <td>Freezing</td>
+               <th scope="row">Freezing</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
             </tr>
             <tr>
-               <td>Thawing</td>
+               <th scope="row">Thawing</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
             </tr>
             <tr>
-               <td>Warming</td>
+               <th scope="row">Warming</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
@@ -144,6 +144,11 @@
                      var wb_x = x.getPixelForValue(wb_date.getTime())
                      var tb_x = x.getPixelForValue(tb_date.getTime())
 
+                     if (cb_x < 0) cb_x = 0
+                     if (fb_x < 0) fb_x = 0
+                     if (wb_x < 0) wb_x = 0
+                     if (tb_x < 0) tb_x = 0
+
 
                      var fb_dist = fb_x - cb_x
                      var wb_dist = wb_x - fb_x
@@ -239,18 +244,19 @@
       }
 
       function createFTCRow(stage, begin, end, diff) {
+         var th = document.createElement("th")
+         th.innerHTML = stage
+         th.scope = "row"
+
          var td1 = document.createElement("td")
-         td1.innerHTML = stage
+         if (begin)
+            td1.innerHTML = begin.toLocaleString()
 
          var td2 = document.createElement("td")
-         if (begin)
-            td2.innerHTML = begin.toLocaleString()
+         if (end)
+            td2.innerHTML = end.toLocaleString()
 
          var td3 = document.createElement("td")
-         if (end)
-            td3.innerHTML = end.toLocaleString()
-
-         var td4 = document.createElement("td")
 
          var daysDifference = Math.floor(diff/1000/60/60/24);
          diff -= daysDifference*1000*60*60*24
@@ -261,12 +267,12 @@
          var minutesDifference = Math.floor(diff/1000/60);
          diff -= minutesDifference*1000*60
 
-         td4.innerHTML = daysDifference + 'd ' +
+         td3.innerHTML = daysDifference + 'd ' +
             hoursDifference + 'H ' + 
             minutesDifference + 'm ';
          
          var tr = document.createElement("tr")
-         tr.append(td1, td2, td3, td4)
+         tr.append(th, td1, td2, td3)
 
          return tr
       }

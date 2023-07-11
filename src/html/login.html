@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title%}
+    Index
+{% endblock %}
+
+{% block content%}
+    
+    <h1 id="login-header">Login</h1>
+    
+    <form id="login-form" action="/login">
+      <input type="text" name="username" id="username-field" class="login-form-field" placeholder="Username" onkeyup="checkInput()">
+      <input type="password" name="password" id="password-field" class="login-form-field" placeholder="Password" onkeyup="checkInput()">
+      
+      {% if msg is defined %}
+        <p style="color: red">{{ msg }}</p>
+      {% endif %}
+    
+      <input type="submit" value="Login" disabled="disabled" id="login-form-submit">  
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const loginForm = document.getElementById("login-form");
+    const loginButton = document.getElementById("login-form-submit");
+    const loginErrorMsg = document.getElementById("login-error-msg");
+
+    function checkInput() {
+        if (loginForm.username.value.length >= 3 && loginForm.password.value.length >= 2)  {
+            loginButton.disabled  = ""
+        } else {
+            loginButton.disabled  = "disabled"
+        }
+    }
+    
+    
+</script>
+{% endblock %}

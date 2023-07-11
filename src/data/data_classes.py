@@ -32,10 +32,38 @@ def createMeasurementsModel(db):
             sensorT = db.Column(db.Float)
     return Measurements
 
-def setup_db(db, Measurements):
+def setupUsers(db):
+    class Users(db.Model):
+            username = db.Column(db.String, primary_key = True)
+            password = db.Column(db.String)
+
+    db.create_all()
+    
+    user = "admin"
+    pw = "pw"
+
+    entry = db.session.execute(db.select(Users).filter_by(username=user)).scalar()
+
+    insert = False
+
+    if entry is None:
+        insert = True
+        entry = Users()
+    
+    entry.username = user
+    entry.password = pw
+
+    if insert == True:
+        db.session.add(entry)
+
+    db.session.commit()
+
+    return Users
+
+def setup_db(db):
     # uncomment to insert---------------
     #db.drop_all()
     db.create_all()
-    db.session.query(Measurements).delete()
+    #db.session.query(Measurements).delete()
 
-    return Measurements
+    #return Measurements

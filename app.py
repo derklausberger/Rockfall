@@ -4,16 +4,15 @@ import src.data.data_classes as dc
 import src.import_csv as ic
 from src.py.algorithms import get_freeze_thaw_cycles
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 template_dir = os.path.abspath('src/html/')
 static_dir = os.path.abspath('res/')
 # create the app
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-
+app.secret_key = 'asdfasgqwez938z4hosohdphpoHADSKN'
 
 # create the extension
 db = SQLAlchemy()
@@ -29,8 +28,9 @@ with app.app_context():
 	#with open("src/data/data_classes.py") as f:
 	#	exec(f.read())
 	Measurements = dc.createMeasurementsModel(db)
+	Users = dc.setupUsers(db)
 
-	dc.setup_db(db, Measurements)
+	dc.setup_db(db)
 	
 	#with open("src/import_csv.py") as f:
 	#	exec(f.read())
@@ -48,32 +48,69 @@ with app.app_context():
 	#dt = [e.dateTime for e in db.session.query(Measurements).filter_by(pilotCase="Brezno").all()]
 	#print(get_freeze_thaw_cycles(dt, at))
 
-
 @app.route('/')
 def index():
-	measurements = db.session.query(Measurements).all()
-
-	return render_template('index.html', data=measurements)
+	#measurements = db.session.query(Measurements).all()
+	if 'username' in session:
+		print(session['username'])
+		return render_template('index.html', loggedIn = True)
+	else:
+		return redirect(url_for("login"))
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-	if request.method == 'POST':
-		for formname, file in request.files.items():
-			if not file.filename == '':
-				print(file.filename)
-				filename = formname + ".xlsx"
-				file.save(filename)
+	if 'username' in session:
+		if request.method == 'POST':
+			for formname, file in request.files.items():
+				if not file.filename == '':
+					print(file.filename)
+					filename = formname + ".xlsx"
+					file.save(filename)
 
-				ic.import_file(db, Measurements, filename, ic.FileType[formname])
-	
-	return render_template("upload.html")
+					ic.import_file(db, Measurements, filename, ic.FileType[formname])
+		
+		return render_template("upload.html", loggedIn = True)
+	else:
+		return redirect(url_for("login"))
 
 @app.route('/delete', methods=['POST'])
 def delete():
-	db.drop_all()
-	db.create_all()
+	if 'username' in session:
+		db.drop_all()
+		db.create_all()
 
-	return render_template("upload.html")
+		return render_template("upload.html", loggedIn = True)
+	else:
+		return redirect(url_for("login"))
+
+
+@app.route('/login_page', methods=['GET'])
+def login_page():
+	if 'username' in session:
+		return redirect(url_for("index"))
+	else:
+		return redirect(url_for("login"))
+
+@app.route('/login', methods=['GET'])
+def login():
+	user = request.args.get('username', None)
+	pw = request.args.get('password', None)
+
+	user_entry = db.session.execute(db.select(Users).filter_by(username=user)).scalar()
+	if (user_entry == None):
+		return render_template("login.html", msg="User does not exist")
+	else:
+		if (user_entry.password != pw):
+			return render_template("login.html", msg="Password is incorrect")
+		else:
+			session['username'] = user
+			return redirect(url_for("index"))
+		
+@app.route('/logout', methods=['GET'])
+def logout():
+	session.pop('username', None)
+	
+	return redirect(url_for("login"))
 
 @app.route('/plot')
 def output_plot():
@@ -128,7 +165,8 @@ def output_plot():
 
 	return render_template(
 		'/plot.html',
-		data = data
+		data = data,
+		loggedIn = ('username' in session)
 	)
 
 """dt=dt,

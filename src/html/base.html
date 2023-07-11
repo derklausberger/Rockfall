@@ -29,7 +29,8 @@
         <aside class="sidenav">
             <div class="col-1">
                 <a class="btn btn-secondary btn.lg" href="./plot" role="button">Chart</button></a>
-                <a class="btn btn-secondary btn.lg" href="./upload" role="button">Upload</button></a>
+                <a class="btn btn-secondary btn.lg" href="./upload" role="button" id="upload-btn">Upload</button></a>
+                <a class="btn btn-secondary btn.lg" href="./login_page" role="button" id="login-btn">Login</button></a>
                 <!--<a class="nav-link active" href="upload.html">Upload</a>
                 <a class="nav-link active" href="#">Bla</a>
                 <a class="nav-link active" href="#">bla</a>
@@ -47,7 +48,7 @@
             </main>
         </div>
 
-        <footer id="footer" class="row">
+        <!--<footer id="footer" class="row">
             <div class="col">
                 <img src="/res/Logo.png">
                 <nav class="nav fixed-bottom justify-content-center navbar-expand-sm ">
@@ -56,10 +57,24 @@
                     <a class="nav-link" href="#">Register/login</a>
                 </nav>
             </div>
-        </footer>
+        </footer>-->
     </div>
 
+    <script>
+        var loginBtn = document.getElementById("login-btn")
+        var uploadBtn = document.getElementById("upload-btn")
+
+        {% if (loggedIn is defined) and (loggedIn == true) %}
+            loginBtn.href = "/logout"
+            loginBtn.innerHTML = "Logout"
+            uploadBtn.classList.remove("disabled")
+        {% else %}
+            uploadBtn.classList.add("disabled")
+        {% endif %}
+    </script>
+
     {% block scripts %}
+    
     {% endblock %}
 </body>
 </html>
