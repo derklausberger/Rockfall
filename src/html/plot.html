@@ -22,26 +22,26 @@
             </tr>
          </thead>
          <tbody id="ftc-tbody">
-            <tr>
+            <tr style="background-color: rgba(116, 85, 155, 0.4);">
                <th scope="row">Cooling</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
             </tr>
-            <tr>
-               <th scope="row">Freezing</td>
+            <tr style="background-color: rgba(112, 184, 74, 0.4);">
+               <th scope="row" >Freezing</td>
+               <td>-</td>
+               <td>-</td>
+               <td>-</td>
+            </tr>
+            <tr style="background-color: rgba(214, 107, 63, 0.4);">
+               <th scope="row">Warming</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
             </tr>
             <tr>
                <th scope="row">Thawing</td>
-               <td>-</td>
-               <td>-</td>
-               <td>-</td>
-            </tr>
-            <tr>
-               <th scope="row">Warming</td>
                <td>-</td>
                <td>-</td>
                <td>-</td>
@@ -144,17 +144,31 @@
                      var wb_x = x.getPixelForValue(wb_date.getTime())
                      var tb_x = x.getPixelForValue(tb_date.getTime())
 
-                     if (cb_x < 0) cb_x = 0
-                     if (fb_x < 0) fb_x = 0
-                     if (wb_x < 0) wb_x = 0
-                     if (tb_x < 0) tb_x = 0
+                     console.log(cb_x + " " + fb_x + " " + left)
+
+                     if (cb_x < left) cb_x = left
+
+                     if (fb_x < left)
+                        fb_x = left
+                     else if (fb_x > right)
+                        fb_x = right
+
+                     if (wb_x < left)
+                        wb_x = left
+                     else if (wb_x > right)
+                        wb_x = right
+
+                     if (tb_x < left)
+                        tb_x = left
+                     else if (tb_x > right)
+                        tb_x = right
 
 
                      var fb_dist = fb_x - cb_x
                      var wb_dist = wb_x - fb_x
                      var tb_dist = tb_x - wb_x
-
                      
+
                      ctx.fillStyle = 'rgba(116, 85, 155, 0.4)';
                      ctx.fillRect(cb_x, top, fb_dist, height);
 
@@ -171,15 +185,14 @@
                         var clickX = event.clientX - rect.left;
 
                         if (clickX > cb_x && clickX < tb_x) {
-                           console.log("hier")
                            var new_body = document.createElement("tbody")
                            new_body.id = "ftc-tbody"
 
                            new_body.append(
-                              createFTCRow("Cooling", cb_date, fb_date, fb_date - cb_date),
-                              createFTCRow("Freezing", fb_date, wb_date, wb_date - fb_date),
-                              createFTCRow("Thawing", wb_date, tb_date, tb_date - wb_date),
-                              createFTCRow("Warming", wb_date, null, null)
+                              createFTCRow("Cooling", cb_date, fb_date, fb_date - cb_date, 'rgba(116, 85, 155, 0.4)'),
+                              createFTCRow("Freezing", fb_date, wb_date, wb_date - fb_date, 'rgba(112, 184, 74, 0.4)'),
+                              createFTCRow("Warming", wb_date, tb_date, tb_date - wb_date, 'rgba(214, 107, 63, 0.4)'),
+                              createFTCRow("Thawing", tb_date, null, null)
                            )
 
                            var ftc_table = document.getElementById("ftc-table")
@@ -214,6 +227,8 @@
                }
             );
 
+            if (end_idx < ({{ pc_data['dt']|length }} - 1)) end_idx += 1
+
             var ctx = chartCanvas.getContext("2d")
             var config = createChartConfig({{ pc }}, {{ pc_data | tojson}}, begin_idx, end_idx)
             chart = new Chart(ctx, config)
@@ -243,7 +258,7 @@
          }
       }
 
-      function createFTCRow(stage, begin, end, diff) {
+      function createFTCRow(stage, begin, end, diff, color) {
          var th = document.createElement("th")
          th.innerHTML = stage
          th.scope = "row"
@@ -271,7 +286,8 @@
             hoursDifference + 'H ' + 
             minutesDifference + 'm ';
          
-         var tr = document.createElement("tr")
+         var tr = document.createElement("tr") 
+         tr.style.backgroundColor = color
          tr.append(th, td1, td2, td3)
 
          return tr
@@ -358,7 +374,8 @@
                },
                elements: {
                   point: {
-                     radius: 0 // default to disabled in all datasets
+                     radius: 2, // default to disabled in all datasets
+                     pointHoverRadius: 5
                   }
                }
             },
