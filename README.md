@@ -40,3 +40,4 @@ Suggestions for improvement:
 - add file deletion for each file
 - change the upload behavior of a file to replace the whole dataset and not to add it? (depends on the datasets)
 - add comments, update project structure and split up files (code refactoring)
+- update lines uploaded from the Excel file to the database (import-csv.py - this should only be done after development because the data upload of thousands of lines takes very long)
